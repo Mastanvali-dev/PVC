@@ -65,23 +65,8 @@ export default function PaymentPage() {
               throw new Error("Payment verification failed");
             }
 
-            // 🔵 STEP 3: PROCESS FILES ONLY AFTER VERIFICATION
-            const fileToBase64 = (file) =>
-              new Promise((resolve, reject) => {
-                if (!file) return resolve("");
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-              });
-
-            const frontBase64 = checkoutData.files.front
-              ? await fileToBase64(checkoutData.files.front)
-              : "";
-
-            const backBase64 = checkoutData.files.back
-              ? await fileToBase64(checkoutData.files.back)
-              : "";
+            const frontUrl = checkoutData.files.frontUrl || "";
+            const backUrl = checkoutData.files.backUrl || "";
 
             // 🟢 STEP 4: SAVE ORDER
             const orderPayload = {
@@ -95,7 +80,7 @@ export default function PaymentPage() {
                 state: checkoutData.address.state,
                 pincode: checkoutData.address.pincode,
               },
-              rcImages: { frontBase64, backBase64 },
+              rcImages: { frontUrl, backUrl },
               paymentInfo: {
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,

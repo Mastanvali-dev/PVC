@@ -27,7 +27,7 @@ export async function GET(req) {
     }
 
     await dbConnect();
-    const order = await Order.findById(orderId).select('-rcImages'); // Exclude images to save bandwidth
+    const order = await Order.findById(orderId); // We can now include images as they are just URLs
 
     if (!order) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });

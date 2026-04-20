@@ -12,8 +12,8 @@ const OrderSchema = new mongoose.Schema({
     pincode: { type: String, required: true }
   },
   rcImages: {
-    frontBase64: { type: String, required: true }, // Using Base64 for MVP
-    backBase64: { type: String, default: "" }
+    frontUrl: { type: String, required: true },
+    backUrl: { type: String, default: "" }
   },
   paymentInfo: {
     razorpayOrderId: { type: String, required: true },

@@ -15,13 +15,9 @@ export default function UploadPage() {
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
   const [error, setError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
 
-  useEffect(() => {
-    if (checkoutData.files.front) setFrontFile(checkoutData.files.front);
-    if (checkoutData.files.back) setBackFile(checkoutData.files.back);
-  }, [checkoutData.files]);
-
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (!frontFile) {
       setError("Please upload your RC card document (Front side or a PDF containing both).");
       return;
@@ -31,8 +27,34 @@ export default function UploadPage() {
       return;
     }
     setError("");
-    updateFiles(frontFile, backFile);
-    router.push("/address");
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("front", frontFile);
+      if (backFile) {
+        formData.append("back", backFile);
+      }
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to upload files");
+      }
+
+      updateFiles(data.frontUrl, data.backUrl || "");
+      router.push("/address");
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "An error occurred during upload.");
+    } finally {
+      setIsUploading(false);
+    }
   };
   return (
     <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
@@ -111,9 +133,10 @@ export default function UploadPage() {
 
             <button
               onClick={handleContinue}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 w-full md:w-auto text-center min-w-[240px] mb-4"
+              disabled={isUploading}
+              className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 w-full md:w-auto text-center min-w-[240px] mb-4 ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              Continue to Step 2
+              {isUploading ? "Uploading..." : "Continue to Step 2"}
             </button>
 
             <button className="text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors">
