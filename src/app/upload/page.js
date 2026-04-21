@@ -5,12 +5,12 @@ import StepProgress from "@/components/StepProgress";
 import FileUploadZone from "@/components/FileUploadZone";
 import { CreditCard, ScanBarcode, CloudUpload, CheckCircle2, TriangleAlert } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCheckout } from "@/context/CheckoutContext";
 
 export default function UploadPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+
   const { checkoutData, updateFiles } = useCheckout();
 
   const [hasExistingFiles, setHasExistingFiles] = useState(false);
