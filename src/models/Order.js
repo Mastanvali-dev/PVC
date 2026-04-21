@@ -12,8 +12,8 @@ const OrderSchema = new mongoose.Schema({
     pincode: { type: String, required: true }
   },
   rcImages: {
-    frontUrl: { type: String, required: true },
-    backUrl: { type: String, default: "" }
+    frontKey: { type: String, required: true },
+    backKey: { type: String, default: "" }
   },
   paymentInfo: {
     razorpayOrderId: { type: String, required: true },

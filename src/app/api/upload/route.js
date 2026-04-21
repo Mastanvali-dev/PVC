@@ -21,7 +21,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "Front file is required" }, { status: 400 });
     }
 
-    const uploadFile = async (file) => {
+const uploadToR2 = async (file) => {
       const buffer = Buffer.from(await file.arrayBuffer());
       const fileExt = file.name.split('.').pop();
       const fileName = `${uuidv4()}.${fileExt}`;
@@ -35,18 +35,17 @@ export async function POST(req) {
 
       await s3Client.send(new PutObjectCommand(uploadParams));
 
-      // Return the public URL
-      return `${process.env.NEXT_PUBLIC_R2_PUBLIC_URL}/${fileName}`;
+      return fileName;
     };
 
-    const frontUrl = await uploadFile(frontFile);
-    let backUrl = "";
+    const frontKey = await uploadToR2(frontFile);
+    let backKey = "";
 
     if (backFile && backFile !== "null") {
-      backUrl = await uploadFile(backFile);
+      backKey = await uploadToR2(backFile);
     }
 
-    return NextResponse.json({ frontUrl, backUrl }, { status: 200 });
+    return NextResponse.json({ frontKey, backKey }, { status: 200 });
 
   } catch (error) {
     console.error("Upload Error:", error);

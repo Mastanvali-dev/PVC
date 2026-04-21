@@ -6,23 +6,35 @@ import StepProgress from "@/components/StepProgress";
 import OrderSummary from "@/components/OrderSummary";
 import HelpCard from "@/components/HelpCard";
 import { ShieldCheck, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckout } from "@/context/CheckoutContext";
 
 export default function AddressPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { checkoutData, updateAddress } = useCheckout();
   
   const [formData, setFormData] = useState(checkoutData.address);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Protect route: redirect if files are missing
-    if (!checkoutData.files.front || (checkoutData.files.front.type !== "application/pdf" && !checkoutData.files.back)) {
-      router.replace("/upload");
-      return;
+    console.log('Address useEffect: checking files', checkoutData.files);
+    console.log('Address fromUpload param:', searchParams.get('fromUpload'));
+    
+    // Skip guard if coming directly from upload (allows state hydration)
+    if (!searchParams.get('fromUpload')) {
+      if (!checkoutData.files.frontKey || (checkoutData.files.frontKey && !checkoutData.files.frontKey.includes('.pdf') && !checkoutData.files.backKey)) {
+        console.log('Address guard: files invalid, redirecting to upload');
+        router.replace("/upload");
+        return;
+      }
+    } else {
+      console.log('Address: fromUpload=true, skipping guard briefly');
     }
+    
     setFormData(checkoutData.address);
-  }, [checkoutData.files, checkoutData.address, router]);
+    setIsLoading(false);
+  }, [checkoutData.files, checkoutData.address, router, searchParams]);
   
   const [loadingPincode, setLoadingPincode] = useState(false);
   const [pincodeError, setPincodeError] = useState("");
@@ -73,6 +85,14 @@ export default function AddressPage() {
       setLoadingPincode(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-[#f8fafc] flex items-center justify-center">
+        <div className="text-center">Loading...</div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
@@ -213,3 +233,4 @@ export default function AddressPage() {
     </main>
   );
 }
+

@@ -7,8 +7,8 @@ const CheckoutContext = createContext();
 export function CheckoutProvider({ children }) {
   const [checkoutData, setCheckoutData] = useState({
     files: {
-      frontUrl: null,
-      backUrl: null,
+      frontKey: null,
+      backKey: null,
     },
     address: {
       fullName: "",
@@ -20,10 +20,10 @@ export function CheckoutProvider({ children }) {
     }
   });
 
-  const updateFiles = (frontUrl, backUrl) => {
+  const updateFiles = (frontKey, backKey) => {
     setCheckoutData(prev => ({
       ...prev,
-      files: { frontUrl, backUrl }
+      files: { frontKey, backKey }
     }));
   };
 
@@ -36,7 +36,7 @@ export function CheckoutProvider({ children }) {
 
   const clearCheckout = () => {
     setCheckoutData({
-      files: { frontUrl: null, backUrl: null },
+    files: { frontKey: null, backKey: null },
       address: {
         fullName: "",
         phone: "",

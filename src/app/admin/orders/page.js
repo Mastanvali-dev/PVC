@@ -47,7 +47,9 @@ export default function AdminOrdersPage() {
     }
   };
 
-  const isPDF = (url) => url && url.toLowerCase().includes('.pdf');
+  const isPDF = (key) => key && key.toLowerCase().endsWith('.pdf');
+
+  const getPreviewUrl = (key) => key ? `/api/download?key=${key}` : '';
 
   return (
     <main className="min-h-screen bg-[#f8fafc] font-sans">
@@ -104,22 +106,22 @@ export default function AdminOrdersPage() {
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {/* Front Image/PDF */}
-                    {order.rcImages?.frontUrl && (
+{order.rcImages?.frontKey && (
                       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col">
                         <div className="flex-1 flex items-center justify-center bg-gray-100 min-h-[120px] p-4 relative group">
-                           {isPDF(order.rcImages.frontUrl) ? (
+                           {isPDF(order.rcImages.frontKey) ? (
                              <FileText className="text-gray-400" size={48} />
                            ) : (
                              // eslint-disable-next-line @next/next/no-img-element
                              <img 
-                               src={order.rcImages.frontUrl} 
+                               src={getPreviewUrl(order.rcImages.frontKey)} 
                                alt="Front RC" 
                                className="max-h-full object-contain"
                              />
                            )}
                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                              <button 
-                               onClick={() => handleDownload(order.rcImages.frontUrl, 'front')}
+                               onClick={() => handleDownload(getPreviewUrl(order.rcImages.frontKey), 'front')}
                                className="bg-white text-gray-900 p-2 rounded-full hover:scale-110 transition-transform"
                                title="Download Original"
                              >
@@ -130,7 +132,7 @@ export default function AdminOrdersPage() {
                         <div className="p-3 bg-white border-t border-gray-100 flex justify-between items-center">
                           <span className="text-xs font-bold text-gray-600">Front Side</span>
                           <button 
-                            onClick={() => handleDownload(order.rcImages.frontUrl, 'front')}
+                            onClick={() => handleDownload(getPreviewUrl(order.rcImages.frontKey), 'front')}
                             className="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1"
                           >
                             <Download size={14} /> Download
@@ -140,22 +142,22 @@ export default function AdminOrdersPage() {
                     )}
 
                     {/* Back Image/PDF */}
-                    {order.rcImages?.backUrl && (
+{order.rcImages?.backKey && (
                       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col">
                         <div className="flex-1 flex items-center justify-center bg-gray-100 min-h-[120px] p-4 relative group">
-                           {isPDF(order.rcImages.backUrl) ? (
+                           {isPDF(order.rcImages.backKey) ? (
                              <FileText className="text-gray-400" size={48} />
                            ) : (
                              // eslint-disable-next-line @next/next/no-img-element
                              <img 
-                               src={order.rcImages.backUrl} 
+                               src={getPreviewUrl(order.rcImages.backKey)} 
                                alt="Back RC" 
                                className="max-h-full object-contain"
                              />
                            )}
                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                              <button 
-                               onClick={() => handleDownload(order.rcImages.backUrl, 'back')}
+                               onClick={() => handleDownload(getPreviewUrl(order.rcImages.backKey), 'back')}
                                className="bg-white text-gray-900 p-2 rounded-full hover:scale-110 transition-transform"
                                title="Download Original"
                              >
@@ -166,7 +168,7 @@ export default function AdminOrdersPage() {
                         <div className="p-3 bg-white border-t border-gray-100 flex justify-between items-center">
                           <span className="text-xs font-bold text-gray-600">Back Side</span>
                           <button 
-                            onClick={() => handleDownload(order.rcImages.backUrl, 'back')}
+                            onClick={() => handleDownload(getPreviewUrl(order.rcImages.backKey), 'back')}
                             className="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1"
                           >
                             <Download size={14} /> Download

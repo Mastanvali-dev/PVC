@@ -65,8 +65,8 @@ export default function PaymentPage() {
               throw new Error("Payment verification failed");
             }
 
-            const frontUrl = checkoutData.files.frontUrl || "";
-            const backUrl = checkoutData.files.backUrl || "";
+            const frontKey = checkoutData.files.frontKey || "";
+            const backKey = checkoutData.files.backKey || "";
 
             // 🟢 STEP 4: SAVE ORDER
             const orderPayload = {
@@ -80,7 +80,7 @@ export default function PaymentPage() {
                 state: checkoutData.address.state,
                 pincode: checkoutData.address.pincode,
               },
-              rcImages: { frontUrl, backUrl },
+              rcImages: { frontKey, backKey },
               paymentInfo: {
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,

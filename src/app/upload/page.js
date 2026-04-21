@@ -5,12 +5,28 @@ import StepProgress from "@/components/StepProgress";
 import FileUploadZone from "@/components/FileUploadZone";
 import { CreditCard, ScanBarcode, CloudUpload, CheckCircle2, TriangleAlert } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCheckout } from "@/context/CheckoutContext";
 
 export default function UploadPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { checkoutData, updateFiles } = useCheckout();
+
+  const [hasExistingFiles, setHasExistingFiles] = useState(false);
+
+  useEffect(() => {
+    if (checkoutData.files.frontKey) {
+      setFrontFile({ name: checkoutData.files.frontKey, type: 'existing' });
+      if (checkoutData.files.backKey) {
+        setBackFile({ name: checkoutData.files.backKey, type: 'existing' });
+      }
+      setHasExistingFiles(true);
+      // Auto navigate if on upload page with existing files
+      console.log('Upload useEffect: files exist, navigating with flag');
+      router.push("/address?fromUpload=true");
+    }
+  }, [checkoutData.files, router]);
 
   const [frontFile, setFrontFile] = useState(null);
   const [backFile, setBackFile] = useState(null);
@@ -22,17 +38,25 @@ export default function UploadPage() {
       setError("Please upload your RC card document (Front side or a PDF containing both).");
       return;
     }
-    if (frontFile.type !== "application/pdf" && !backFile) {
+    if (frontFile.type !== "application/pdf" && frontFile.type !== 'existing' && !backFile) {
       setError("Please upload both the front and back images of your RC card to continue.");
       return;
     }
+
+    if (hasExistingFiles) {
+      // Files already uploaded, just navigate
+      console.log("FILES EXIST, NAVIGATING WITH FLAG");
+      router.push("/address?fromUpload=true");
+      return;
+    }
+
     setError("");
     setIsUploading(true);
 
     try {
       const formData = new FormData();
       formData.append("front", frontFile);
-      if (backFile) {
+      if (backFile && backFile.type !== 'existing') {
         formData.append("back", backFile);
       }
 
@@ -47,8 +71,9 @@ export default function UploadPage() {
         throw new Error(data.error || "Failed to upload files");
       }
 
-      updateFiles(data.frontUrl, data.backUrl || "");
-      router.push("/address");
+      updateFiles(data.frontKey, data.backKey || "");
+      console.log("Upload success, navigating to address with flag");
+      router.push("/address?fromUpload=true");
     } catch (err) {
       console.error(err);
       setError(err.message || "An error occurred during upload.");
@@ -134,9 +159,9 @@ export default function UploadPage() {
             <button
               onClick={handleContinue}
               disabled={isUploading}
-              className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-8 rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 w-full md:w-auto text-center min-w-[240px] mb-4 ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
+              className={`bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-8 rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5 w-full md:w-auto text-center min-w-[240px] mb-4 ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
             >
-              {isUploading ? "Uploading..." : "Continue to Step 2"}
+              {hasExistingFiles ? "Files Ready ✓ Continue to Address" : isUploading ? "Uploading..." : "Continue to Step 2"}
             </button>
 
             <button className="text-gray-500 hover:text-gray-900 text-sm font-medium transition-colors">
@@ -158,3 +183,4 @@ export default function UploadPage() {
     </main>
   );
 }
+
