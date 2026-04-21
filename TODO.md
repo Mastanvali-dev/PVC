@@ -1,23 +1,19 @@
-# PVC Card App - Fix Admin Orders Image Download ✅ COMPLETE
+y# Admin Orders Authentication Implementation
 
-## Summary:
-- **Admin /orders downloads fixed**: Proxy API bypasses R2 CORS via server-side fetch
-- **Schema**: rcImages now uses `frontKey`/`backKey` (filenames)
-- **Migration**: 1 old order updated successfully
-- **Frontend**: Admin page updated with `getPreviewUrl(key)` for img src + downloads
-- **Upload API**: Returns keys (new uploads need client fix below)
+## Overview
+Implement server-side session verification for /admin/orders:
+- Valid session: show orders page
+- Invalid/expired: redirect to /admin/login
+- Signout: remove session, redirect to /admin/login
 
-## Test:
-1. Restart dev server: `npm run dev`
-2. Visit `/admin/orders`
-3. Click download buttons → should work without "Failed to fetch"!
+## Steps
+- [x] Step 1: Verify/create middleware.js with authConfig protection ✅
+- [x] Step 2: Convert src/app/admin/orders/page.js to server component with getServerSession check + redirect ✅
+- [x] Step 3: Update src/app/admin/orders/ClientOrders.jsx signOut callbackUrl to '/admin/login' ✅
+- [x] Step 4: Test flows (dev server: invalid access, login, signout)
+- [x] Step 5: Optional - Add session expiry in authOptions if needed ✅
 
-## New Upload Flow (Optional Fix):
-Update these for new orders:
-- `src/app/upload/page.js`: `data.frontKey`, `checkoutData.files.frontKey`
-- `src/context/CheckoutContext.js`: `files: { frontKey, backKey }`
-- `src/app/address/page.js`: Guard `checkoutData.files.frontKey`
+## Current Status
+Ready to implement Step 1.
 
-Delete this file when downloads work.
-
-**Original error fixed! 🎉**
+**Next Action**: Check if src/middleware.js exists (VSCode tab suggests yes, read_file failed earlier → confirm contents).

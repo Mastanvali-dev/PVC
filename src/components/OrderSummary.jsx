@@ -15,7 +15,7 @@ export default function OrderSummary({ showPayButton = false, onPay }) {
         <div>
           <h4 className="font-bold text-gray-900 text-sm">Premium PVC Elite</h4>
           <p className="text-xs text-gray-500 mb-1">Standard Conversion • Premium Finish</p>
-          <p className="text-sm font-bold text-blue-600">1 Unit</p>
+          <p className="text-sm font-bold text-blue-600">2 Units</p>
         </div>
       </div>
       

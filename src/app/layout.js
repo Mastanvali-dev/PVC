@@ -1,6 +1,9 @@
+import Loader from "@/components/Loader";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CheckoutProvider } from "@/context/CheckoutContext";
+import { SessionProvider } from "next-auth/react";
+import Providers from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,8 +26,11 @@ export default function RootLayout({ children }) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <CheckoutProvider>{children}</CheckoutProvider>
+      <body className="min-h-full flex flex-col relative">
+        <Providers>
+          {children}
+        </Providers>
+        <Loader isVisible={false} /> {/* Global loader mount */}
       </body>
     </html>
   );

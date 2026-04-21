@@ -5,7 +5,8 @@ import { Check, ReceiptText, Wallet, Truck, ArrowRight, Download } from "lucide-
 import Link from "next/link";
 import jsPDF from "jspdf";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, Suspense, useState } from "react";
+import Loader from "@/components/Loader";
+import { useEffect, Suspense, useState, useTransition } from "react";
 import { useCheckout } from "@/context/CheckoutContext";
 import autoTable from "jspdf-autotable";
 
@@ -15,7 +16,9 @@ function SuccessContent() {
   const orderId = searchParams.get("orderId");
   const [isClient, setIsClient] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
-  const { clearCheckout } = useCheckout();
+  const [isFetching, setIsFetching] = useState(true);
+  const { clearCheckout, setLoading, anyLoading } = useCheckout();
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     setIsClient(true);
@@ -25,6 +28,7 @@ function SuccessContent() {
       // Clear the checkout context once we successfully reach the success page
       clearCheckout();
 
+      setLoading('api', true);
       // Fetch order details
       fetch(`/api/orders?orderId=${orderId}`)
         .then(res => res.json())
@@ -33,9 +37,14 @@ function SuccessContent() {
             setOrderDetails(data.order);
           }
         })
-        .catch(err => console.error("Failed to fetch order details", err));
+        .catch(err => console.error("Failed to fetch order details", err))
+.finally(() => {
+          setIsFetching(false);
+          setLoading('api', false);
+          setLoading('nav', false);
+        });
     }
-  }, [orderId, router, clearCheckout]);
+  }, [orderId, router, clearCheckout, setLoading]);
 
   const deliveryDate = new Date();
   deliveryDate.setDate(deliveryDate.getDate() + 4);
@@ -104,7 +113,9 @@ function SuccessContent() {
     doc.save(`invoice-${orderId || 'order'}.pdf`);
   };
 
-  if (!isClient || !orderId) return null;
+  if (!isClient || !orderId || isFetching || anyLoading || isPending) {
+    return <Loader isVisible message="Loading order details..." />;
+  }
 
   return (
     <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
@@ -232,7 +243,7 @@ function SuccessContent() {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#f8fafc] flex items-center justify-center">Loading...</div>}>
+    <Suspense fallback={<Loader message="Loading..." />}>
       <SuccessContent />
     </Suspense>
   );

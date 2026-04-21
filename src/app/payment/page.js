@@ -6,14 +6,16 @@ import PaymentMethodList from "@/components/PaymentMethodList";
 import OrderSummary from "@/components/OrderSummary";
 import { Shield, ShieldCheck, FileKey2 } from "lucide-react";
 import Script from "next/script";
-import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useCheckout } from "@/context/CheckoutContext";
 
 export default function PaymentPage() {
-  const { checkoutData, clearCheckout } = useCheckout();
+  const { checkoutData, clearCheckout, setLoading, anyLoading } = useCheckout();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     // Protect route: redirect if address is missing
@@ -24,6 +26,7 @@ export default function PaymentPage() {
 
   const handlePay = async () => {
     setIsProcessing(true);
+    setLoading('payment', true);
 
     try {
       // STEP 1: Create Razorpay Order
@@ -47,7 +50,7 @@ export default function PaymentPage() {
         description: "Premium PVC RC Card",
         order_id: data.orderId,
 
-        // ✅ FIXED HANDLER
+        // ✅ FIXED HANDLER - SHOW LOADER BEFORE ASYNC
         handler: async function (response) {
           setIsProcessing(true);
 
@@ -103,13 +106,17 @@ export default function PaymentPage() {
             const saveData = await saveRes.json();
 
             // Navigate to success page. We will clear the checkout state there.
-            router.push(`/success?orderId=${saveData.orderId}`);
+            setLoading('nav', true);
+            startTransition(() => {
+              router.push(`/success?orderId=${saveData.orderId}`);
+            });
 
           } catch (err) {
             console.error(err);
             alert(err.message || "Payment failed or verification error");
           } finally {
             setIsProcessing(false);
+            setLoading('payment', false);
           }
         },
 
@@ -117,6 +124,7 @@ export default function PaymentPage() {
         modal: {
           ondismiss: () => {
             setIsProcessing(false);
+            setLoading('payment', false);
           },
         },
 
@@ -148,52 +156,59 @@ export default function PaymentPage() {
         "Error initiating payment. Check Razorpay keys."
       );
       setIsProcessing(false);
+      setLoading('payment', false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
-      <Script src="https://checkout.razorpay.com/v1/checkout.js" />
+    <>
+      <Loader 
+        isVisible={isProcessing || anyLoading || isPending} 
+        message={isProcessing ? "Processing your payment..." : "Navigating..."} 
+      />
+      <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
-      <Navbar />
+        <Navbar />
 
-      <div className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <CheckoutSteps currentStep={3} />
+        <div className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <CheckoutSteps currentStep={3} />
 
-        <div className="flex flex-col lg:flex-row gap-8 mt-2">
-          <div className="w-full lg:w-2/3">
-            <div className="mb-8">
-              <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
-                Secure Checkout
-              </h1>
-              <p className="text-gray-600">
-                Choose your preferred payment method.
-              </p>
+          <div className="flex flex-col lg:flex-row gap-8 mt-2">
+            <div className="w-full lg:w-2/3">
+              <div className="mb-8">
+                <h1 className="text-3xl font-extrabold text-gray-900 mb-2">
+                  Secure Checkout
+                </h1>
+                <p className="text-gray-600">
+                  Choose your preferred payment method.
+                </p>
+              </div>
+
+              <PaymentMethodList />
+
+              <div className="flex items-center justify-center gap-6 mt-12 text-gray-400 text-xs font-bold uppercase">
+                <div className="flex items-center gap-1.5">
+                  <Shield size={14} />
+                  SSL Encrypted
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck size={14} />
+                  Secure Checkout
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <FileKey2 size={14} />
+                  PCI Compliant
+                </div>
+              </div>
             </div>
 
-            <PaymentMethodList />
-
-            <div className="flex items-center justify-center gap-6 mt-12 text-gray-400 text-xs font-bold uppercase">
-              <div className="flex items-center gap-1.5">
-                <Shield size={14} />
-                SSL Encrypted
-              </div>
-              <div className="flex items-center gap-1.5">
-                <ShieldCheck size={14} />
-                Secure Checkout
-              </div>
-              <div className="flex items-center gap-1.5">
-                <FileKey2 size={14} />
-                PCI Compliant
-              </div>
+            <div className="w-full lg:w-1/3 space-y-6">
+              <OrderSummary showPayButton={true} onPay={handlePay} disabled={isProcessing} />
             </div>
-          </div>
-
-          <div className="w-full lg:w-1/3 space-y-6">
-            <OrderSummary showPayButton={true} onPay={handlePay} />
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

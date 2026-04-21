@@ -20,6 +20,16 @@ export function CheckoutProvider({ children }) {
     }
   });
 
+  const [loadingStates, setLoadingStates] = useState({
+    payment: false,
+    nav: false,
+    api: false
+  });
+
+  const setLoading = (type, value) => {
+    setLoadingStates(prev => ({ ...prev, [type]: value }));
+  };
+
   const updateFiles = (frontKey, backKey) => {
     setCheckoutData(prev => ({
       ...prev,
@@ -48,8 +58,18 @@ export function CheckoutProvider({ children }) {
     });
   };
 
+  const anyLoading = Object.values(loadingStates).some(Boolean);
+
   return (
-    <CheckoutContext.Provider value={{ checkoutData, updateFiles, updateAddress, clearCheckout }}>
+    <CheckoutContext.Provider value={{ 
+      checkoutData, 
+      updateFiles, 
+      updateAddress, 
+      clearCheckout,
+      loadingStates,
+      setLoading,
+      anyLoading
+    }}>
       {children}
     </CheckoutContext.Provider>
   );
