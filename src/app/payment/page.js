@@ -84,7 +84,7 @@ export default function PaymentPage() {
               paymentInfo: {
                 razorpayOrderId: response.razorpay_order_id,
                 razorpayPaymentId: response.razorpay_payment_id,
-                amount: 33000,
+                amount: data.amount / 100, // Convert paise to rupees
                 status: "Success",
               },
             };
