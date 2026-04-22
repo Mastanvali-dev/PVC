@@ -20,3 +20,31 @@ export async function GET(req) {
     return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
   }
 }
+
+export async function PATCH(req) {
+  const session = await getServerSession();
+  
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await dbConnect();
+    const { orderId, printed } = await req.json();
+    
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { printed },
+      { returnDocument: 'after' }
+    );
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, order }, { status: 200 });
+  } catch (error) {
+    console.error("Admin Order Update Error:", error);
+    return NextResponse.json({ error: "Failed to update order" }, { status: 500 });
+  }
+}

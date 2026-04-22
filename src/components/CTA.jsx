@@ -9,7 +9,7 @@ export default function CTA() {
           Join over 5,000 professionals who trust PVC CARD CATALOGUE for their essential physical documentation.
         </p>
         <a 
-          href="https://wa.me/918179676982?text=Hi!%20I%20have%20a%20question%20about%20the%20PVC%20Card%20Catalogue."
+          href="https://wa.me/919640883888?text=Hi!%20I%20have%20a%20question%20about%20the%20PVC%20Card%20Catalogue."
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-full font-bold transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 text-lg"

@@ -20,7 +20,8 @@ const OrderSchema = new mongoose.Schema({
     razorpayPaymentId: { type: String, required: true },
     amount: { type: Number, required: true },
     status: { type: String, default: 'Success' }
-  }
+  },
+  printed: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export default mongoose.models.Order || mongoose.model('Order', OrderSchema);

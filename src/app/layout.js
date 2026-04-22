@@ -4,6 +4,7 @@ import "./globals.css";
 import { CheckoutProvider } from "@/context/CheckoutContext";
 import { SessionProvider } from "next-auth/react";
 import Providers from "./providers";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,7 @@ export default function RootLayout({ children }) {
         <Providers>
           {children}
         </Providers>
+        <Toaster richColors position="top-right" />
         <Loader isVisible={false} /> {/* Global loader mount */}
       </body>
     </html>
