@@ -106,7 +106,7 @@ onClick={() => signOut({ callbackUrl: '/admin/login' })}
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                       {order.paymentInfo?.status || "Success"}
                     </span>
-                    <span className="text-xs text-gray-500 ml-3">₹{order.paymentInfo?.amount ? order.paymentInfo.amount / 100 : "N/A"}</span>
+                    <span className="text-xs text-gray-500 ml-3">₹{order.paymentInfo?.amount ? order.paymentInfo.amount : "N/A"}</span>
                   </div>
                 </div>
 
