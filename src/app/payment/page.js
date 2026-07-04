@@ -33,7 +33,7 @@ export default function PaymentPage() {
       const res = await fetch("/api/razorpay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: 33000, currency: "INR" }),
+        body: JSON.stringify({ amount: 35000, currency: "INR" }),
       });
 
       const data = await res.json();
@@ -162,9 +162,9 @@ export default function PaymentPage() {
 
   return (
     <>
-      <Loader 
-        isVisible={isProcessing || anyLoading || isPending} 
-        message={isProcessing ? "Processing your payment..." : "Navigating..."} 
+      <Loader
+        isVisible={isProcessing || anyLoading || isPending}
+        message={isProcessing ? "Processing your payment..." : "Navigating..."}
       />
       <main className="min-h-screen bg-[#f8fafc] font-sans selection:bg-blue-100 flex flex-col">
         <Script src="https://checkout.razorpay.com/v1/checkout.js" />

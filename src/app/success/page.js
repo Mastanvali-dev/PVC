@@ -38,7 +38,7 @@ function SuccessContent() {
           }
         })
         .catch(err => console.error("Failed to fetch order details", err))
-.finally(() => {
+        .finally(() => {
           setIsFetching(false);
           setLoading('api', false);
           setLoading('nav', false);
@@ -95,10 +95,10 @@ function SuccessContent() {
       startY: 85,
       head: [["Description", "Quantity", "Price", "Total"]],
       body: [
-        ["Premium PVC RC Card Conversion", "1", "INR 330.00", "INR 330.00"],
+        ["Premium PVC RC Card Conversion", "1", "INR 350.00", "INR 350.00"],
         ["Shipping", "-", "Free", "Free"]
       ],
-      foot: [["", "", "Grand Total", "INR 330.00"]],
+      foot: [["", "", "Grand Total", "INR 350.00"]],
       theme: "grid",
       headStyles: { fillColor: [37, 99, 235] },
       footStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: "bold" }

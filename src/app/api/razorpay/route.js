@@ -12,7 +12,7 @@ export async function POST(req) {
     const { amount, currency } = body;
 
     const options = {
-      amount: amount || 33000, // Default to 330 INR in paise
+      amount: amount || 35000, // Default to 350 INR in paise
       currency: currency || "INR",
       receipt: `receipt_${Date.now()}`,
     };
